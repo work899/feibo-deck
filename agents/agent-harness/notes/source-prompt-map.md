@@ -18,6 +18,9 @@ This map records how `claude-fable-5-system-prompt.md` informs Agent Harness. It
 - `mcp_app_suggestions`: teaches connector routing and opt-in for external services. Agent Harness adapts the concept into `policies/tools.md`.
 - `computer_use`: teaches file creation, file handling, package management, and artifacts. Agent Harness adapts this into `policies/files.md` and `policies/tools.md`.
 - `search_instructions`: teaches freshness, source quality, citation, and copyright discipline. Agent Harness adapts this into `policies/research.md`.
+- Search and file-decision examples teach concrete routing behavior. Agent Harness adapts these into `policies/routing-examples.md` and `evals/routing-details.yaml`.
+- Output self-checks, copyright checks, and completion checks teach pre-response discipline. Agent Harness adapts these into `policies/preflight-checks.md`.
+- Long conversation reminders teach lightweight context refresh. Agent Harness adapts this into `policies/context-refresh.md`.
 - `using_image_search_tool`: teaches modality routing. Agent Harness should add an image policy only when its runtime supports image search.
 - `Tool Definitions`: teaches that tool schemas belong to runtime context. Agent Harness does not copy unavailable tool schemas into `SYSTEM.md`.
 - `Identity Preamble`: teaches that identity and date belong near the top. Agent Harness keeps identity compact and injects date dynamically.
@@ -29,4 +32,3 @@ This map records how `claude-fable-5-system-prompt.md` informs Agent Harness. It
 ## Extraction Principle
 
 Retain mechanisms, not claims. The reusable mechanisms are routing, verification, memory honesty, source freshness, output contracts, and examples. The non-reusable material is identity, product claims, hardcoded dates, platform paths, tool syntax, and unsupported APIs.
-

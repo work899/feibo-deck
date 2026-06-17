@@ -17,6 +17,21 @@
       "path": "agents/agent-harness/harness.json"
     },
     {
+      "kind": "file_exists",
+      "description": "Routing examples policy exists",
+      "path": "agents/agent-harness/policies/routing-examples.md"
+    },
+    {
+      "kind": "file_exists",
+      "description": "Preflight checks policy exists",
+      "path": "agents/agent-harness/policies/preflight-checks.md"
+    },
+    {
+      "kind": "file_exists",
+      "description": "Context refresh policy exists",
+      "path": "agents/agent-harness/policies/context-refresh.md"
+    },
+    {
       "kind": "compile",
       "description": "Coding profile compiles for Codex",
       "profile": "coding",

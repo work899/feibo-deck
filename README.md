@@ -13,7 +13,7 @@ Agent Harness addresses that by making agent behavior modular and portable. One 
 ## What It Provides
 
 - A compact core system prompt that defines the agent's mission, routing, tool use, file behavior, style, and completion standard.
-- Policy cards for research, files, tools, memory, safety, style, and verification.
+- Policy cards for research, files, tools, memory, safety, style, routing examples, preflight checks, context refresh, and verification.
 - Profiles that select policy cards for different modes such as general use, coding, and research.
 - Host adapters for Codex, Claude Code, and IDE assistants.
 - A target capability matrix that checks whether a profile can safely run on a host.
@@ -114,6 +114,8 @@ Evals are lightweight regression cases. They are not a full model evaluation fra
 ## Common Workflows
 
 To create a new behavior rule, add or edit a policy card, include it in the relevant profile, then add an eval case that captures the failure mode the rule is meant to prevent.
+
+To add a small routing detail, prefer `routing-examples` or `preflight-checks` instead of expanding the core prompt. These cards hold concrete examples such as exact-URL fetching, unknown-entity lookup, durable-output routing, and context refresh after interruption.
 
 To create a new agent mode, add a profile that selects an appropriate policy-card set. Then compile it for the target host and inspect the generated prompt.
 

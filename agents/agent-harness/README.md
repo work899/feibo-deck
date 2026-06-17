@@ -20,7 +20,7 @@ After reading this directory, a maintainer should be able to compile a host-spec
 - `done_criteria.json`: deterministic project-readiness checks used by `verify`.
 - `profiles/`: policy selections for `core`, `coding`, and `research`.
 - `adapters/`: host-specific wrappers for `core`, `codex`, `claude-code`, and `ide`.
-- `policies/`: expandable behavior cards for research, files, tools, memory, style, safety, and verification.
+- `policies/`: expandable behavior cards for research, files, tools, memory, style, safety, routing examples, preflight checks, context refresh, and verification.
 - `evals/`: lightweight regression cases for routing, formatting, tool use, and completion.
 - `SKILL.md`: Codex skill entry point for operating the harness.
 - `notes/source-prompt-map.md`: traceability from source prompt sections to Agent Harness modules.
@@ -72,3 +72,5 @@ Keep `SYSTEM.md` compact. Put detailed domain behavior in policy cards and load 
 Change behavior by starting with the failure mode. Add or update an eval, adjust the smallest relevant prompt/policy/profile, compile the affected target, then run `python .\scripts\agent_harness.py eval` and `python .\scripts\agent_harness.py verify`.
 
 If a profile starts depending on a host feature, add that feature to `capabilities.json` and list it in the profile's `requires` array. `doctor` should fail before install when the target does not satisfy the profile.
+
+Small prompt lessons should usually become examples or preflight checks, not core prompt text. Use `routing-examples.md` for "request -> route" examples, `preflight-checks.md` for before-answer/before-complete checklists, and `context-refresh.md` for long-task continuation behavior.

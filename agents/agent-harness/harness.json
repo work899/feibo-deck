@@ -8,7 +8,10 @@
   "policies": {
     "files": "policies/files.md",
     "memory": "policies/memory.md",
+    "context-refresh": "policies/context-refresh.md",
+    "preflight-checks": "policies/preflight-checks.md",
     "research": "policies/research.md",
+    "routing-examples": "policies/routing-examples.md",
     "safety": "policies/safety.md",
     "style": "policies/style.md",
     "tools": "policies/tools.md",

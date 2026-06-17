@@ -1,6 +1,6 @@
 {
   "name": "coding",
   "description": "Coding-focused Agent Harness profile for repository work, tests, reviews, and implementation.",
-  "policies": ["style", "tools", "files", "memory", "research", "verification", "safety"],
+  "policies": ["style", "tools", "routing-examples", "preflight-checks", "context-refresh", "files", "memory", "research", "verification", "safety"],
   "requires": ["prompt_compilation", "project_instruction_install", "host_runtime_injected", "verification_guidance"]
 }

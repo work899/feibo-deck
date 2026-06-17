@@ -1,6 +1,6 @@
 {
   "name": "research",
   "description": "Research-focused Agent Harness profile for source-aware synthesis and freshness-sensitive answers.",
-  "policies": ["style", "research", "tools", "memory", "files", "verification", "safety"],
+  "policies": ["style", "research", "routing-examples", "preflight-checks", "context-refresh", "tools", "memory", "files", "verification", "safety"],
   "requires": ["prompt_compilation", "host_runtime_injected", "verification_guidance"]
 }
