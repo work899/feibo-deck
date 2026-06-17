@@ -1,0 +1,26 @@
+name: agent-harness-formatting
+purpose: Regression cases for response shape and final reports.
+cases:
+  - id: simple_answer_prose
+    user: "What does idempotent mean?"
+    expected_style: short_prose
+    must_not:
+      - unnecessary_headings
+      - long_bullets
+
+  - id: review_findings_first
+    user: "Review this diff for bugs."
+    expected_style: findings_first
+    must:
+      - severity_ordered_findings
+      - file_or_area_reference_when_available
+      - residual_risks_if_no_findings
+
+  - id: final_with_verification
+    user: "Implement the change."
+    expected_style: concise_completion_report
+    must:
+      - outcome
+      - changed_files_if_any
+      - verification
+      - known_gaps

@@ -1,0 +1,52 @@
+name: agent-harness-routing
+purpose: Regression cases for Agent Harness capability routing.
+cases:
+  - id: stable_direct_answer
+    user: "Explain a Python for loop in one paragraph."
+    expected_route: answer_directly
+    must_not:
+      - web_search
+      - file_creation
+    notes: "Stable basic programming knowledge should not trigger retrieval."
+
+  - id: current_role_requires_search
+    user: "Who is the current CEO of Disney?"
+    expected_route: current_source_lookup
+    must:
+      - use_current_source
+      - cite_or_link_source
+    notes: "Current office holders can change."
+
+  - id: implied_file_requires_inspection
+    user: "Summarize the design doc in this repo."
+    expected_route: inspect_local_files
+    must:
+      - list_or_search_files
+      - inspect_relevant_file
+    must_not:
+      - pretend_file_exists
+
+  - id: durable_output_requires_file
+    user: "Write this as a reusable Markdown guide."
+    expected_route: create_file
+    must:
+      - create_markdown_file
+      - report_path
+
+  - id: code_completion_requires_verification
+    user: "Fix the failing tests."
+    expected_route: inspect_edit_verify
+    must:
+      - inspect_failure
+      - edit_minimally
+      - run_relevant_tests
+      - report_test_result
+
+  - id: ambiguous_but_reversible
+    user: "Make the docs clearer."
+    expected_route: inspect_and_assume
+    must:
+      - inspect_docs
+      - state_assumption
+      - proceed_if_low_risk
+    notes: "Do not ask a broad clarifying question when local docs can reveal a reasonable target."

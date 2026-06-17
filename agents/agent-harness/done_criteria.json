@@ -1,0 +1,53 @@
+{
+  "checks": [
+    {
+      "kind": "file_exists",
+      "description": "Project README exists",
+      "path": "README.md"
+    },
+    {
+      "kind": "file_min_lines",
+      "description": "Project README is substantive",
+      "path": "README.md",
+      "min_lines": 80
+    },
+    {
+      "kind": "file_exists",
+      "description": "Harness manifest exists",
+      "path": "agents/agent-harness/harness.json"
+    },
+    {
+      "kind": "compile",
+      "description": "Coding profile compiles for Codex",
+      "profile": "coding",
+      "target": "codex"
+    },
+    {
+      "kind": "compile",
+      "description": "Coding profile compiles for Claude Code",
+      "profile": "coding",
+      "target": "claude-code"
+    },
+    {
+      "kind": "compile",
+      "description": "Coding profile compiles for IDE assistants",
+      "profile": "coding",
+      "target": "ide"
+    },
+    {
+      "kind": "eval",
+      "description": "Harness eval files are structurally valid"
+    },
+    {
+      "kind": "py_compile",
+      "description": "CLI script compiles",
+      "path": "scripts/agent_harness.py"
+    },
+    {
+      "kind": "forbidden_text_absent",
+      "description": "Old mistaken agent name is absent",
+      "pattern": "Hemess",
+      "exclude_paths": ["agents/agent-harness/done_criteria.json"]
+    }
+  ]
+}

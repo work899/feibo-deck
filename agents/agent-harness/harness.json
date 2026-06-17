@@ -1,0 +1,28 @@
+{
+  "name": "agent-harness",
+  "version": "0.1.0",
+  "description": "A portable agent governance harness compiled from a compact system prompt, policy cards, profiles, and host adapters.",
+  "system": "SYSTEM.md",
+  "capabilities": "capabilities.json",
+  "doneCriteria": "done_criteria.json",
+  "policies": {
+    "files": "policies/files.md",
+    "memory": "policies/memory.md",
+    "research": "policies/research.md",
+    "safety": "policies/safety.md",
+    "style": "policies/style.md",
+    "tools": "policies/tools.md",
+    "verification": "policies/verification.md"
+  },
+  "adapters": {
+    "core": "adapters/core.md",
+    "codex": "adapters/codex.md",
+    "claude-code": "adapters/claude-code.md",
+    "ide": "adapters/ide.md"
+  },
+  "profiles": {
+    "core": "profiles/core.json",
+    "coding": "profiles/coding.json",
+    "research": "profiles/research.json"
+  }
+}

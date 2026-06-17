@@ -1,0 +1,40 @@
+{
+  "targets": {
+    "core": {
+      "prompt_compilation": true,
+      "project_instruction_install": false,
+      "skill_install": false,
+      "command_install": false,
+      "ide_rules_install": false,
+      "host_runtime_injected": true,
+      "verification_guidance": true
+    },
+    "codex": {
+      "prompt_compilation": true,
+      "project_instruction_install": true,
+      "skill_install": true,
+      "command_install": false,
+      "ide_rules_install": false,
+      "host_runtime_injected": true,
+      "verification_guidance": true
+    },
+    "claude-code": {
+      "prompt_compilation": true,
+      "project_instruction_install": true,
+      "skill_install": false,
+      "command_install": true,
+      "ide_rules_install": false,
+      "host_runtime_injected": true,
+      "verification_guidance": true
+    },
+    "ide": {
+      "prompt_compilation": true,
+      "project_instruction_install": true,
+      "skill_install": false,
+      "command_install": false,
+      "ide_rules_install": true,
+      "host_runtime_injected": true,
+      "verification_guidance": true
+    }
+  }
+}
