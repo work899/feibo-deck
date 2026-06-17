@@ -22,6 +22,29 @@ cases:
       - use_current_source
       - cite_or_link_source
 
+  - id: stable_historical_direct
+    user: "When did the Apollo 11 landing happen?"
+    expected_route: answer_directly
+    must_not:
+      - web_search
+    notes: "Settled historical facts should not trigger search unless the user asks for sources or current status."
+
+  - id: familiar_series_new_release
+    user: "What is the newest book in the Murderbot series?"
+    expected_route: current_source_lookup
+    must:
+      - use_current_source
+      - avoid_guessing_from_name
+    notes: "Knowing a series does not mean knowing its latest release."
+
+  - id: present_tense_status_lookup
+    user: "Does this Python package still exist?"
+    expected_route: current_source_lookup
+    must:
+      - use_current_source
+      - cite_or_link_source
+    notes: "Present-tense status questions require current evidence."
+
   - id: inline_strategy_not_file
     user: "Give me a quick strategy for handling flaky tests."
     expected_route: answer_directly

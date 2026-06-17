@@ -32,6 +32,8 @@ If verification fails, fix recoverable failures and rerun.
 
 If verification cannot run, report the exact blocker and the command that would verify the work.
 
+If deployment, publishing, account access, or another external action requires missing authority or credentials, do not imply it happened. State the missing authority or credentials, then state the next verification step the user or runtime can take.
+
 ## Before Summarizing Sources
 
 Paraphrase by default.

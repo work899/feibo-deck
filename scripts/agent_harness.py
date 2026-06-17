@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import json
 import py_compile
+import re
 import sys
 import tempfile
 from datetime import datetime, timezone
@@ -15,6 +16,45 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 HARNESS_DIR = ROOT / "agents" / "agent-harness"
 BUILD_DIR = ROOT / ".agent-harness" / "build"
+
+CONTRACT_RULES: dict[str, list[tuple[str, ...]]] = {
+    "answer_from_fetched_content": [("fetched content", "exact url")],
+    "avoid_fake_deploy": [("do not claim", "state_missing_authority_or_credentials")],
+    "avoid_guessing_from_name": [("unknown entity rule", "unfamiliar named entity")],
+    "changed_files_if_any": [("changed files",)],
+    "cite_or_link_source": [("cite the source", "provide links", "cite or link")],
+    "collect_evidence": [("run the verification", "evidence already collected", "smallest relevant checks")],
+    "continue_next_action": [("continue with the next", "next action")],
+    "create_markdown_file": [("use markdown", "markdown file")],
+    "edit_minimally": [("editing minimally", "edits small")],
+    "fetch_user_url": [("exact url",)],
+    "file_or_area_reference_when_available": [("file or area reference", "name changed files")],
+    "identify_entity_before_opinion": [("unknown entity rule", "look up the entity")],
+    "identify_evidence": [("identify what would prove", "identify evidence")],
+    "inspect_docs": [("inspect", "local file")],
+    "inspect_failure": [("observing the failure", "inspect failure")],
+    "inspect_files": [("inspect files", "local file inspection")],
+    "inspect_relevant_file": [("reading the relevant local file", "inspect relevant")],
+    "known_gaps": [("remaining gaps", "not run")],
+    "list_or_search_files": [("finding and reading", "file inspection")],
+    "outcome": [("outcome", "report the evidence")],
+    "proceed_if_low_risk": [("safe reversible assumption", "proceed and state")],
+    "report_path": [("report", "path")],
+    "report_result": [("report the evidence", "report result")],
+    "report_test_result": [("report", "test")],
+    "residual_risks_if_no_findings": [("residual risks",)],
+    "restate_objective": [("restate the current objective", "active objective")],
+    "run_relevant_tests": [("run the relevant check", "tests")],
+    "severity_ordered_findings": [("ordered by severity", "severity")],
+    "state_assumption": [("state it", "state_assumption")],
+    "state_missing_authority_or_credentials": [("missing authority", "credentials", "report the exact blocker")],
+    "state_next_verification_step": [("next verification", "command that would verify")],
+    "synthesize_structure": [("synthesize", "structure")],
+    "use_current_source": [("current-source lookup", "current sources", "current or potentially changed")],
+    "use_exact_url": [("exact url",)],
+    "use_newest_evidence": [("newest evidence", "newer user task updates", "new evidence contradicts")],
+    "verification": [("verification",)],
+}
 
 
 def read_text(path: Path) -> str:
@@ -71,11 +111,20 @@ def render_compile(profile_name: str, target_name: str) -> tuple[str, str]:
             raise SystemExit(f"Profile references unknown policy '{policy_name}'") from exc
         policy_blocks.append(read_text(policy_path).strip())
 
+    local_now = datetime.now().astimezone().replace(microsecond=0)
     generated_at = datetime.now(timezone.utc).replace(microsecond=0).isoformat()
+    timezone_name = local_now.tzname() or local_now.strftime("%z")
     body = [
         f"# Agent Harness Compiled Prompt ({target_name}/{profile_name})",
         "",
         f"Generated: {generated_at}",
+        "",
+        "## Runtime Context",
+        "",
+        f"- Current date: {local_now.date().isoformat()}",
+        f"- Current local time: {local_now.isoformat()}",
+        f"- Timezone: {timezone_name}",
+        "- Treat host-provided runtime context as authoritative if it is more specific or newer.",
         "",
         "## Host Adapter",
         "",
@@ -218,7 +267,36 @@ def command_install(args: argparse.Namespace) -> int:
     return 0
 
 
-def validate_eval_file(path: Path) -> list[str]:
+def extract_required_contract_tokens(text: str) -> list[str]:
+    tokens: list[str] = []
+    active: str | None = None
+    for line in text.splitlines():
+        stripped = line.strip()
+        if stripped == "must:":
+            active = "must"
+            continue
+        if stripped == "must_not:":
+            active = "must_not"
+            continue
+        if re.match(r"^[A-Za-z_][\w-]*:", stripped):
+            active = None
+            continue
+        if active == "must":
+            match = re.match(r"^-\s+([A-Za-z0-9_]+)\s*$", stripped)
+            if match:
+                tokens.append(match.group(1))
+    return tokens
+
+
+def contract_token_is_supported(token: str, compiled_prompt: str) -> bool:
+    lowered = compiled_prompt.lower()
+    for phrase_group in CONTRACT_RULES[token]:
+        if any(phrase.lower() in lowered for phrase in phrase_group):
+            return True
+    return False
+
+
+def validate_eval_file(path: Path, compiled_prompt: str) -> list[str]:
     text = read_text(path)
     errors: list[str] = []
     if "name:" not in text:
@@ -229,6 +307,12 @@ def validate_eval_file(path: Path) -> list[str]:
         errors.append("missing case id")
     if "expected_" not in text:
         errors.append("missing expected_* field")
+    for token in sorted(set(extract_required_contract_tokens(text))):
+        if token not in CONTRACT_RULES:
+            errors.append(f"missing contract rule for token '{token}'")
+            continue
+        if not contract_token_is_supported(token, compiled_prompt):
+            errors.append(f"contract token not supported by compiled prompt: {token}")
     return errors
 
 
@@ -240,8 +324,9 @@ def command_eval(_: argparse.Namespace) -> int:
         return 1
 
     failed = False
+    _, compiled_prompt = render_compile("coding", "codex")
     for path in files:
-        errors = validate_eval_file(path)
+        errors = validate_eval_file(path, compiled_prompt)
         if errors:
             failed = True
             print(f"FAIL {path}: {', '.join(errors)}")
@@ -303,6 +388,18 @@ def run_done_check(check: dict) -> tuple[bool, str]:
             target = str(check["target"])
             render_compile(profile, target)
             return True, description
+
+        if kind == "compiled_contains":
+            profile = str(check["profile"])
+            target = str(check["target"])
+            needle = str(check["text"])
+            _, compiled = render_compile(profile, target)
+            return needle in compiled, description
+
+        if kind == "file_contains":
+            path = safe_relative_path(str(check["path"]))
+            needle = str(check["text"])
+            return path.exists() and needle in read_text(path), description
 
         if kind == "eval":
             return command_eval(argparse.Namespace()) == 0, description

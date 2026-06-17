@@ -50,8 +50,34 @@
       "target": "ide"
     },
     {
+      "kind": "compiled_contains",
+      "description": "Compiled prompt injects current date runtime context",
+      "profile": "coding",
+      "target": "codex",
+      "text": "## Runtime Context"
+    },
+    {
+      "kind": "compiled_contains",
+      "description": "Compiled prompt includes exact URL routing guidance",
+      "profile": "coding",
+      "target": "codex",
+      "text": "exact URL"
+    },
+    {
+      "kind": "file_contains",
+      "description": "Research policy includes rate-of-change routing",
+      "path": "agents/agent-harness/policies/research.md",
+      "text": "## Rate Of Change"
+    },
+    {
+      "kind": "file_contains",
+      "description": "Research policy includes unknown entity routing",
+      "path": "agents/agent-harness/policies/research.md",
+      "text": "## Unknown Entity Rule"
+    },
+    {
       "kind": "eval",
-      "description": "Harness eval files are structurally valid"
+      "description": "Harness eval files have executable behavior contracts"
     },
     {
       "kind": "py_compile",

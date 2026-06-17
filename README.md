@@ -19,7 +19,7 @@ Agent Harness addresses that by making agent behavior modular and portable. One 
 - A target capability matrix that checks whether a profile can safely run on a host.
 - Declarative done criteria that verify the kit is ready without asking an LLM to judge it.
 - A no-dependency Python CLI for compiling, installing, and validating the harness.
-- Lightweight eval files that catch regressions in routing, formatting, tool use, and completion claims.
+- Lightweight executable eval files that catch regressions in routing, formatting, tool use, research freshness, and completion claims.
 
 ## Requirements
 
@@ -107,9 +107,9 @@ Adapters translate the same harness into a host-specific instruction surface. Th
 
 Capabilities describe what each target host supports. Profiles declare requirements, and `doctor` fails early when a profile asks for behavior the target cannot provide.
 
-Done criteria are deterministic checks for the kit itself. They verify files, compilation, eval structure, and forbidden-text regressions without relying on model judgment.
+Done criteria are deterministic checks for the kit itself. They verify files, compilation, runtime context injection, eval contracts, and forbidden-text regressions without relying on model judgment.
 
-Evals are lightweight regression cases. They are not a full model evaluation framework yet; they validate that the harness files have the expected structure and document the behavior that future tests should enforce.
+Evals are lightweight regression cases. They are not a full model evaluation framework, but they are executable: the CLI parses each `must` behavior token and verifies that the compiled prompt contains a mapped policy basis for that behavior. This catches policy regressions such as deleting current-source routing, exact-URL handling, file inspection, or completion-evidence requirements.
 
 ## Common Workflows
 
