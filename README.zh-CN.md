@@ -1,7 +1,6 @@
 <div align="center">
 
-# Feibo Deck
-
+# 肥波的牌
 ### 从一个生产级系统提示词逆向提炼，打造可移植、可测试的 AI Agent 治理套件。
 
 ![version](https://img.shields.io/badge/version-0.3.0-blue)
