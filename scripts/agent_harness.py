@@ -6,7 +6,6 @@ from __future__ import annotations
 import argparse
 import json
 import py_compile
-import re
 import sys
 import tempfile
 from datetime import datetime, timezone
@@ -17,43 +16,54 @@ ROOT = Path(__file__).resolve().parents[1]
 HARNESS_DIR = ROOT / "agents" / "agent-harness"
 BUILD_DIR = ROOT / ".agent-harness" / "build"
 
-CONTRACT_RULES: dict[str, list[tuple[str, ...]]] = {
-    "answer_from_fetched_content": [("fetched content", "exact url")],
-    "avoid_fake_deploy": [("do not claim", "state_missing_authority_or_credentials")],
-    "avoid_guessing_from_name": [("unknown entity rule", "unfamiliar named entity")],
-    "changed_files_if_any": [("changed files",)],
-    "cite_or_link_source": [("cite the source", "provide links", "cite or link")],
-    "collect_evidence": [("run the verification", "evidence already collected", "smallest relevant checks")],
-    "continue_next_action": [("continue with the next", "next action")],
-    "create_markdown_file": [("use markdown", "markdown file")],
-    "edit_minimally": [("editing minimally", "edits small")],
-    "fetch_user_url": [("exact url",)],
-    "file_or_area_reference_when_available": [("file or area reference", "name changed files")],
-    "identify_entity_before_opinion": [("unknown entity rule", "look up the entity")],
-    "identify_evidence": [("identify what would prove", "identify evidence")],
-    "inspect_docs": [("inspect", "local file")],
-    "inspect_failure": [("observing the failure", "inspect failure")],
-    "inspect_files": [("inspect files", "local file inspection")],
-    "inspect_relevant_file": [("reading the relevant local file", "inspect relevant")],
-    "known_gaps": [("remaining gaps", "not run")],
-    "list_or_search_files": [("finding and reading", "file inspection")],
-    "outcome": [("outcome", "report the evidence")],
-    "proceed_if_low_risk": [("safe reversible assumption", "proceed and state")],
-    "report_path": [("report", "path")],
-    "report_result": [("report the evidence", "report result")],
-    "report_test_result": [("report", "test")],
-    "residual_risks_if_no_findings": [("residual risks",)],
-    "restate_objective": [("restate the current objective", "active objective")],
-    "run_relevant_tests": [("run the relevant check", "tests")],
-    "severity_ordered_findings": [("ordered by severity", "severity")],
-    "state_assumption": [("state it", "state_assumption")],
-    "state_missing_authority_or_credentials": [("missing authority", "credentials", "report the exact blocker")],
-    "state_next_verification_step": [("next verification", "command that would verify")],
-    "synthesize_structure": [("synthesize", "structure")],
-    "use_current_source": [("current-source lookup", "current sources", "current or potentially changed")],
-    "use_exact_url": [("exact url",)],
-    "use_newest_evidence": [("newest evidence", "newer user task updates", "new evidence contradicts")],
-    "verification": [("verification",)],
+KNOWN_EVAL_TOKENS = {
+    "admit_if_not_run",
+    "answer_from_fetched_content",
+    "avoid_fake_deploy",
+    "avoid_guessing_from_name",
+    "changed_files_if_any",
+    "cite_or_link_source",
+    "claim_pass_without_running_or_observing",
+    "collect_evidence",
+    "continue_next_action",
+    "create_file",
+    "create_markdown_file",
+    "edit_minimally",
+    "empty_acknowledgement",
+    "fetch_user_url",
+    "file_creation",
+    "file_or_area_reference_when_available",
+    "identify_entity_before_opinion",
+    "identify_evidence",
+    "inspect_docs",
+    "inspect_failure",
+    "inspect_files",
+    "inspect_relevant_file",
+    "known_gaps",
+    "list_or_search_files",
+    "long_bullets",
+    "outcome",
+    "prefer_specialized_tool",
+    "pretend_file_exists",
+    "proceed_if_low_risk",
+    "report_path",
+    "report_result",
+    "report_test_result",
+    "residual_risks_if_no_findings",
+    "restate_objective",
+    "run_or_state_not_run",
+    "run_relevant_tests",
+    "severity_ordered_findings",
+    "state_assumption",
+    "state_missing_authority_or_credentials",
+    "state_next_verification_step",
+    "synthesize_structure",
+    "unnecessary_headings",
+    "use_current_source",
+    "use_exact_url",
+    "use_newest_evidence",
+    "verification",
+    "web_search",
 }
 
 
@@ -100,7 +110,6 @@ def render_compile(profile_name: str, target_name: str) -> tuple[str, str]:
         raise SystemExit(f"Unknown target '{target_name}'. Available: {available}")
 
     profile = load_profile(harness, profile_name)
-    system = read_text(HARNESS_DIR / harness["system"]).strip()
     adapter = read_text(HARNESS_DIR / harness["adapters"][target_name]).strip()
 
     policy_blocks: list[str] = []
@@ -111,20 +120,21 @@ def render_compile(profile_name: str, target_name: str) -> tuple[str, str]:
             raise SystemExit(f"Profile references unknown policy '{policy_name}'") from exc
         policy_blocks.append(read_text(policy_path).strip())
 
+    # The kernel carries a {{CURRENT_DATE}} placeholder so the live date lives
+    # inside the runtime prompt itself, not only in a compile-time wrapper.
+    # Hosts that inject their own date still win (the placeholder text tells the
+    # agent so), but a host that does nothing now still gets a usable date.
     local_now = datetime.now().astimezone().replace(microsecond=0)
-    generated_at = datetime.now(timezone.utc).replace(microsecond=0).isoformat()
     timezone_name = local_now.tzname() or local_now.strftime("%z")
+    current_date_str = f"{local_now.date().isoformat()} ({timezone_name})"
+    system_raw = read_text(HARNESS_DIR / harness["system"])
+    system = system_raw.replace("{{CURRENT_DATE}}", current_date_str).strip()
+
+    generated_at = datetime.now(timezone.utc).replace(microsecond=0).isoformat()
     body = [
         f"# Agent Harness Compiled Prompt ({target_name}/{profile_name})",
         "",
-        f"Generated: {generated_at}",
-        "",
-        "## Runtime Context",
-        "",
-        f"- Current date: {local_now.date().isoformat()}",
-        f"- Current local time: {local_now.isoformat()}",
-        f"- Timezone: {timezone_name}",
-        "- Treat host-provided runtime context as authoritative if it is more specific or newer.",
+        f"Generated: {generated_at}. The kernel date above is compile-time; prefer a host-supplied runtime date when one is newer.",
         "",
         "## Host Adapter",
         "",
@@ -267,72 +277,116 @@ def command_install(args: argparse.Namespace) -> int:
     return 0
 
 
-def extract_required_contract_tokens(text: str) -> list[str]:
-    tokens: list[str] = []
-    active: str | None = None
-    for line in text.splitlines():
-        stripped = line.strip()
-        if stripped == "must:":
-            active = "must"
-            continue
-        if stripped == "must_not:":
-            active = "must_not"
-            continue
-        if re.match(r"^[A-Za-z_][\w-]*:", stripped):
-            active = None
-            continue
-        if active == "must":
-            match = re.match(r"^-\s+([A-Za-z0-9_]+)\s*$", stripped)
-            if match:
-                tokens.append(match.group(1))
-    return tokens
+def validate_token_list(case: dict, field: str, prefix: str, case_id: object) -> list[str]:
+    values = case.get(field)
+    if values is None:
+        return []
+    if not isinstance(values, list):
+        return [f"{prefix} ({case_id}): {field} must be a list"]
 
-
-def contract_token_is_supported(token: str, compiled_prompt: str) -> bool:
-    lowered = compiled_prompt.lower()
-    for phrase_group in CONTRACT_RULES[token]:
-        if any(phrase.lower() in lowered for phrase in phrase_group):
-            return True
-    return False
+    errors: list[str] = []
+    for token in values:
+        if not isinstance(token, str) or not token.strip():
+            errors.append(f"{prefix} ({case_id}): {field} entry must be a non-empty string")
+            continue
+        if token not in KNOWN_EVAL_TOKENS:
+            errors.append(f"{prefix} ({case_id}): unknown {field} token: {token!r}")
+    return errors
 
 
 def validate_eval_file(path: Path, compiled_prompt: str) -> list[str]:
-    text = read_text(path)
+    """Structural validation plus enforced_by anchor checks.
+
+    Each eval case may declare ``enforced_by``: a list of distinctive substrings
+    that must survive verbatim in the compiled target prompt. If an anchor is
+    missing, the rule the case protects is not present in the installed profile,
+    and the eval reports a failure instead of passing.
+    """
     errors: list[str] = []
-    if "name:" not in text:
+    try:
+        data = json.loads(read_text(path))
+    except json.JSONDecodeError as exc:
+        return [f"invalid JSON: {exc}"]
+
+    if not isinstance(data, dict):
+        return ["top-level value is not an object"]
+    if not data.get("name"):
         errors.append("missing name")
-    if "cases:" not in text:
+    cases = data.get("cases")
+    if not isinstance(cases, list) or not cases:
         errors.append("missing cases")
-    if "- id:" not in text:
-        errors.append("missing case id")
-    if "expected_" not in text:
-        errors.append("missing expected_* field")
-    for token in sorted(set(extract_required_contract_tokens(text))):
-        if token not in CONTRACT_RULES:
-            errors.append(f"missing contract rule for token '{token}'")
+        return errors
+
+    for idx, case in enumerate(cases, start=1):
+        prefix = f"case {idx}"
+        if not isinstance(case, dict):
+            errors.append(f"{prefix}: not an object")
             continue
-        if not contract_token_is_supported(token, compiled_prompt):
-            errors.append(f"contract token not supported by compiled prompt: {token}")
+        case_id = case.get("id", "?")
+        if not case.get("id"):
+            errors.append(f"{prefix}: missing id")
+        if not any(key.startswith("expected_") for key in case):
+            errors.append(f"{prefix} ({case_id}): missing expected_* field")
+        errors.extend(validate_token_list(case, "must", prefix, case_id))
+        errors.extend(validate_token_list(case, "must_not", prefix, case_id))
+
+        anchors = case.get("enforced_by")
+        if anchors is None:
+            # Structural-only case: allowed, but it cannot protect a rule.
+            continue
+        if not isinstance(anchors, list) or not anchors:
+            errors.append(f"{prefix} ({case_id}): enforced_by must be a non-empty list")
+            continue
+        for anchor in anchors:
+            if not isinstance(anchor, str) or not anchor.strip():
+                errors.append(f"{prefix} ({case_id}): enforced_by entry must be a non-empty string")
+                continue
+            if anchor not in compiled_prompt:
+                errors.append(f"{prefix} ({case_id}): anchor not found in compiled prompt: {anchor!r}")
+
     return errors
 
 
 def command_eval(_: argparse.Namespace) -> int:
     eval_dir = HARNESS_DIR / "evals"
-    files = sorted(eval_dir.glob("*.yaml"))
+    files = sorted(eval_dir.glob("*.json"))
     if not files:
         print("No eval files found", file=sys.stderr)
         return 1
 
     failed = False
+    total_cases = 0
+    protected_cases = 0
     _, compiled_prompt = render_compile("coding", "codex")
     for path in files:
         errors = validate_eval_file(path, compiled_prompt)
+        # Count cases for the coverage summary regardless of pass/fail.
+        try:
+            data = json.loads(read_text(path))
+            cases = data.get("cases", []) if isinstance(data, dict) else []
+        except json.JSONDecodeError:
+            cases = []
+        for case in cases:
+            if not isinstance(case, dict):
+                continue
+            total_cases += 1
+            if case.get("enforced_by"):
+                protected_cases += 1
         if errors:
             failed = True
-            print(f"FAIL {path}: {', '.join(errors)}")
+            print(f"FAIL {path.name}")
+            for err in errors:
+                print(f"       - {err}")
         else:
-            print(f"PASS {path}")
+            print(f"PASS {path.name}")
 
+    coverage = 0
+    if total_cases:
+        coverage = round(100 * protected_cases / total_cases)
+    print(
+        f"\nCoverage: {protected_cases}/{total_cases} cases protect a rule via enforced_by ({coverage}%)."
+    )
+    print("Each protected case fails if its rule is missing from the compiled coding/codex prompt.")
     return 1 if failed else 0
 
 

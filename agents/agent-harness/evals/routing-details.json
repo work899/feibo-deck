@@ -1,0 +1,50 @@
+{
+  "name": "agent-harness-routing-details",
+  "purpose": "Regression cases for small but important routing details learned from the source prompt.",
+  "cases": [
+    {
+      "id": "exact_url_fetch",
+      "user": "Summarize what https://example.com/terms says about refunds.",
+      "expected_route": "fetch_exact_url",
+      "must": ["use_exact_url", "answer_from_fetched_content"],
+      "enforced_by": ["When a URL is provided and access is available, fetch that exact URL before answering about its contents"]
+    },
+    {
+      "id": "unknown_named_entity_lookup",
+      "user": "Is Tofes 17 worth trying?",
+      "expected_route": "lookup_unknown_entity",
+      "must": ["identify_entity_before_opinion", "avoid_guessing_from_name"],
+      "enforced_by": ["look up the entity before explaining, recommending, comparing, or judging it"]
+    },
+    {
+      "id": "familiarity_not_knowledge",
+      "user": "Does the popular framework's newest version support this?",
+      "expected_route": "current_source_lookup",
+      "must": ["avoid_guessing_from_name", "use_current_source"],
+      "enforced_by": ["Familiarity is not knowledge"],
+      "notes": "Knowing a product family does not mean knowing its newest release."
+    },
+    {
+      "id": "current_policy_lookup",
+      "user": "What's the current Social Security retirement age?",
+      "expected_route": "current_source_lookup",
+      "must": ["use_current_source", "cite_or_link_source"],
+      "enforced_by": ["Present-tense status questions require extra care"]
+    },
+    {
+      "id": "inline_strategy_not_file",
+      "user": "Give me a quick strategy for handling flaky tests.",
+      "expected_route": "answer_directly",
+      "must_not": ["create_file"],
+      "enforced_by": ["Conversational advice, explanations, and quick summaries should stay in chat"],
+      "notes": "Strategy/explanation is conversational unless the user asks for durable output."
+    },
+    {
+      "id": "long_task_context_refresh",
+      "user": "continue",
+      "expected_route": "refresh_current_context",
+      "must": ["restate_objective", "use_newest_evidence", "continue_next_action"],
+      "enforced_by": ["Refresh after a long interruption, a user says \"continue\""]
+    }
+  ]
+}

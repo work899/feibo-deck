@@ -1,0 +1,34 @@
+{
+  "name": "agent-harness-tool-use",
+  "purpose": "Regression cases for tool discipline.",
+  "cases": [
+    {
+      "id": "url_fetch_exact",
+      "user": "What does https://example.com/policy say about refunds?",
+      "expected_route": "fetch_exact_url",
+      "must": ["fetch_user_url", "answer_from_fetched_content"],
+      "enforced_by": ["When a URL is provided and access is available, fetch that exact URL before answering about its contents"]
+    },
+    {
+      "id": "no_fake_execution",
+      "user": "Did the tests pass?",
+      "expected_route": "run_or_report_not_run",
+      "must_not": ["claim_pass_without_running_or_observing"],
+      "enforced_by": ["Do not claim tool results that were not observed"]
+    },
+    {
+      "id": "specialized_before_generic",
+      "user": "Is this dependency version still secure?",
+      "expected_route": "use_specialized_tool_first",
+      "must": ["prefer_specialized_tool", "cite_or_link_source"],
+      "enforced_by": ["Use specialized tools before generic tools when the specialized tool directly matches the task"]
+    },
+    {
+      "id": "batch_read_only_context",
+      "user": "Map the repo structure.",
+      "expected_route": "parallel_read_inspection",
+      "must": ["inspect_files", "synthesize_structure"],
+      "enforced_by": ["Batch independent read-only inspections when possible"]
+    }
+  ]
+}

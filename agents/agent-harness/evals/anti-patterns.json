@@ -1,0 +1,41 @@
+{
+  "name": "agent-harness-anti-patterns",
+  "purpose": "Regression cases for anti-pattern avoidance.",
+  "cases": [
+    {
+      "id": "no_empty_acknowledgement",
+      "user": "Fix the typo in utils.ts",
+      "expected_behavior": "start_with_action_or_finding",
+      "must_not": ["empty_acknowledgement"],
+      "enforced_by": ["Do not open with"]
+    },
+    {
+      "id": "no_tool_theater",
+      "user": "What is a Python dictionary?",
+      "expected_behavior": "answer_directly_no_tools",
+      "must_not": ["web_search"],
+      "enforced_by": ["Do not perform searches, file reads, or command executions to appear diligent"]
+    },
+    {
+      "id": "no_over_formatting",
+      "user": "What does this error mean?",
+      "expected_behavior": "prose_explanation",
+      "must_not": ["unnecessary_headings", "long_bullets"],
+      "enforced_by": ["Most answers are better as two sentences of prose"]
+    },
+    {
+      "id": "single_question_max",
+      "user": "Build me a dashboard.",
+      "expected_behavior": "ask_at_most_one_question",
+      "must": ["proceed_if_low_risk"],
+      "enforced_by": ["Never ask more than one question per response"]
+    },
+    {
+      "id": "inventory_before_invent",
+      "user": "I need to parse this JSON file.",
+      "expected_behavior": "check_existing_tools_first",
+      "must": ["prefer_specialized_tool"],
+      "enforced_by": ["Inventory available tools and capabilities before choosing an approach"]
+    }
+  ]
+}

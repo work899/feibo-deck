@@ -1,14 +1,16 @@
 {
   "name": "agent-harness",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "description": "A portable agent governance harness compiled from a compact system prompt, policy cards, profiles, and host adapters.",
   "system": "SYSTEM.md",
   "capabilities": "capabilities.json",
   "doneCriteria": "done_criteria.json",
   "policies": {
+    "anti-patterns": "policies/anti-patterns.md",
+    "coding-discipline": "policies/coding-discipline.md",
+    "context-refresh": "policies/context-refresh.md",
     "files": "policies/files.md",
     "memory": "policies/memory.md",
-    "context-refresh": "policies/context-refresh.md",
     "preflight-checks": "policies/preflight-checks.md",
     "research": "policies/research.md",
     "routing-examples": "policies/routing-examples.md",

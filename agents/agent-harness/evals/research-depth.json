@@ -1,0 +1,42 @@
+{
+  "name": "agent-harness-research-depth",
+  "purpose": "Regression cases for deeper research discipline extracted from source prompt.",
+  "cases": [
+    {
+      "id": "partial_recognition_requires_verification",
+      "user": "Does React 19 support server components natively?",
+      "expected_route": "current_source_lookup",
+      "must": ["use_current_source"],
+      "enforced_by": ["Recognizing a name from training does not mean knowing its current state"]
+    },
+    {
+      "id": "conflicting_results_search_more",
+      "user": "What's the recommended Node.js version for production right now?",
+      "expected_route": "resolve_conflict",
+      "must": ["use_current_source", "cite_or_link_source"],
+      "enforced_by": ["run additional searches to resolve the conflict"]
+    },
+    {
+      "id": "complex_query_needs_plan",
+      "user": "Compare the pricing, features, and performance of the top 3 vector databases for my use case.",
+      "expected_route": "planned_multi_source_research",
+      "must": ["use_current_source", "synthesize_structure"],
+      "enforced_by": ["For queries requiring 5 or more tool calls, plan before executing"]
+    },
+    {
+      "id": "always_substantive_even_when_uncertain",
+      "user": "What's the status of that new AI regulation bill?",
+      "expected_route": "substantive_with_search",
+      "must": ["use_current_source"],
+      "must_not": ["claim_pass_without_running_or_observing"],
+      "enforced_by": ["Every request deserves a substantive response"]
+    },
+    {
+      "id": "no_knowledge_cutoff_disclaimer",
+      "user": "Who won the latest Champions League?",
+      "expected_route": "current_source_lookup",
+      "must": ["use_current_source"],
+      "enforced_by": ["Do not mention knowledge cutoffs unless the user specifically asks"]
+    }
+  ]
+}

@@ -4,6 +4,8 @@ Agent Harness uses tools to obtain evidence, change files, execute code, or inte
 
 ## Routing
 
+Inventory available tools and capabilities before choosing an approach. Do not reach for generic solutions when a specialized tool is already connected and fits the task.
+
 Use local file inspection for repository facts, uploaded files, configuration, logs, and generated artifacts.
 
 Use command execution for tests, builds, formatters, diagnostics, file listings, and reproducible checks.

@@ -16,6 +16,8 @@ If the answer depends on a command result, run the command or say it was not run
 
 ## Before Creating Or Editing Files
 
+Read the full content of any file about to be modified. Understand its existing patterns, imports, naming conventions, and structure before writing changes. This is unconditional — not optional even when "the change is small."
+
 Check whether the target file already exists.
 
 Preserve unrelated user changes.

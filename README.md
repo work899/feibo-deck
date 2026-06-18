@@ -1,165 +1,179 @@
-# Agent Harness Kit
+<div align="center">
 
-Agent Harness Kit is a portable governance layer for AI agents. It turns a large, monolithic system prompt into a maintainable set of prompts, policy cards, profiles, adapters, and regression checks that can be used across Codex, Claude Code, and IDE assistants.
+# Agent Harness
 
-The project started from a Claude-style system prompt as a design corpus. The goal is not to clone that assistant. The goal is to extract the durable engineering pattern: agents should inspect before assuming, use current sources when facts may have changed, create real files when durable output is requested, verify before claiming completion, and report evidence instead of performing confidence.
+### Reverse-engineered from a production-grade system prompt into a portable, tested AI agent governance kit.
+
+![version](https://img.shields.io/badge/version-0.3.0-blue)
+![license](https://img.shields.io/badge/license-MIT-green)
+![python](https://img.shields.io/badge/python-3.10%2B-yellow)
+![evals](https://img.shields.io/badge/eval%20coverage-33%2F33-brightgreen)
+![deps](https://img.shields.io/badge/dependencies-zero-success)
+
+</div>
+
+---
+
+> **TL;DR** — We took a ~1,600-line production system prompt (Claude Fable 5) apart across three iterations, kept the durable engineering *mechanisms* (routing, verification, memory honesty, source freshness, output contracts), threw away the non-portable *claims* (identity, brand, hardcoded dates, tool schemas), and reassembled them as modular policy cards with executable regression tests — installable into Codex, Claude Code, or any IDE assistant with one command.
+
+## The Origin
+
+This kit was **not** written from scratch. It was **extracted**.
+
+The source corpus is `claude-fable-5-system-prompt.md`, a mature assistant prompt that encodes not just a persona but a layered control system: priorities, routing rules, tool usage, memory assumptions, output style, safety boundaries, and verification habits.
+
+A mature prompt like that is valuable not because of *who the assistant is*, but because of *how it decides what to do*. That decision machinery is reusable across any agent, any host, any task. Agent Harness distills that machinery.
+
+### What was kept vs. what was discarded
+
+| Kept (mechanisms) | Discarded (claims) |
+|---|---|
+| Inspect-before-assume routing | Claude / Anthropic identity |
+| Verify-before-claim completion loop | Product names & URLs |
+| Current-source for volatile facts | Hardcoded knowledge-cutoff dates |
+| Memory honesty (no fabricated recall) | Platform-specific tool schemas |
+| Prose-first output contracts | `{antml:invoke}` / artifact XML syntax |
+| Routing by rate-of-change | `/mnt/user-data/outputs` paths |
+| Failure-driven rule design | Refusal-handling tuned for consumers |
+
+## The Three Extraction Rounds
+
+This kit grew through three deliberate iterations, each going deeper into the source prompt's design philosophy.
+
+```
+ Round 1 — SURFACE              Round 2 — STRUCTURE             Round 3 — EPISTEMOLOGY
+ ─────────────────────          ─────────────────────           ─────────────────────────
+ What rules say                 How rules behave                Why rules exist
+ ─────────────────────          ─────────────────────           ─────────────────────────
+ • Epistemic precision          • Anti-patterns (9 modes)       • Research planning
+ • Read-before-write            • Single-question limit         • Calibrated skepticism
+ • Prose-first formatting       • Tool-theater avoidance        • Conflict → search more
+                                • Inventory-before-invent       • Partial-recognition trap
+                                • Governance meta-principle     • Pre-output self-check
+  evals: 23                     evals: 28                       evals: 33  ✓
+```
+
+Every rule in the kit traces back to a **specific line in Fable 5** that itself traces back to an **observed production failure**. That lineage is documented in [`notes/source-prompt-map.md`](agents/agent-harness/notes/source-prompt-map.md).
 
 ## What Problem It Solves
 
-AI coding and research agents often fail in predictable ways. They answer from stale memory, summarize files they never opened, say tests passed when nothing ran, produce chat text when the user asked for a reusable file, or behave differently across tools because every host has a separate prompt.
+AI agents fail in predictable ways. They answer from stale memory, summarize files they never opened, claim tests passed when nothing ran, produce chat text when a file was requested, or behave inconsistently across tools because every host has a separate prompt.
 
-Agent Harness addresses that by making agent behavior modular and portable. One harness can compile host-specific instructions for different tools while preserving the same operating discipline.
+Agent Harness makes agent behavior **modular, verifiable, and portable**.
+
+## How It Works
+
+```mermaid
+flowchart TD
+    A["Host Runtime<br/>Codex · Claude Code · IDE"] --> B
+    B["Adapter Layer<br/>host-specific integration"] --> C
+    C["Core System Prompt<br/>mission · routing · defaults"] --> D
+    D["Policy Cards<br/>modular behavior rules"] --> E
+    E["Profile<br/>selects policies by mode"] --> F
+    F["Eval + Done Criteria<br/>regression + verification"]
+
+    style A fill:#fef3c7,stroke:#d97706
+    style C fill:#dbeafe,stroke:#2563eb
+    style D fill:#d1fae5,stroke:#059669
+    style F fill:#fce7f3,stroke:#db2777
+```
 
 ## What It Provides
 
-- A compact core system prompt that defines the agent's mission, routing, tool use, file behavior, style, and completion standard.
-- Policy cards for research, files, tools, memory, safety, style, routing examples, preflight checks, context refresh, and verification.
-- Profiles that select policy cards for different modes such as general use, coding, and research.
-- Host adapters for Codex, Claude Code, and IDE assistants.
-- A target capability matrix that checks whether a profile can safely run on a host.
-- Declarative done criteria that verify the kit is ready without asking an LLM to judge it.
-- A no-dependency Python CLI for compiling, installing, and validating the harness.
-- Lightweight executable eval files that catch regressions in routing, formatting, tool use, research freshness, and completion claims.
-
-## Requirements
-
-Use Python 3.10 or newer. The CLI uses only the Python standard library.
-
-No package installation is required.
+| Layer | Artifacts | Purpose |
+|---|---|---|
+| **Core** | `SYSTEM.md` | Mission, priority order, operating defaults |
+| **Policies** | 12 policy cards | Modular rules: research, files, tools, memory, safety, style, routing, preflight, context-refresh, verification, coding-discipline, anti-patterns |
+| **Profiles** | 3 profiles | `core` · `coding` · `research` — pick the right policy mix |
+| **Adapters** | 4 adapters | `core` · `codex` · `claude-code` · `ide` (Cursor/Copilot/Windsurf) |
+| **Evals** | 33 cases | Executable regression with `enforced_by` anchors |
+| **Checks** | Done criteria | 16 deterministic gates, no model judgment required |
 
 ## Quick Start
 
-List available profiles and targets:
+```bash
+# See what's available
+python scripts/agent_harness.py list
 
-```powershell
-python .\scripts\agent_harness.py list
+# Compile the coding profile for your host
+python scripts/agent_harness.py compile --profile coding --target codex
+python scripts/agent_harness.py compile --profile coding --target claude-code
+python scripts/agent_harness.py compile --profile coding --target ide
+
+# Install into a real project (writes AGENTS.md / CLAUDE.md / rules)
+python scripts/agent_harness.py install --profile coding --target claude-code --project .
+
+# Prove the kit is healthy
+python scripts/agent_harness.py eval      # 33 regression cases
+python scripts/agent_harness.py verify    # 16 done-criteria gates
+python scripts/agent_harness.py doctor --profile coding --target codex
 ```
 
-Compile a coding profile for Codex:
+> Python 3.10+, standard library only. **Zero dependencies. No install step.**
 
-```powershell
-python .\scripts\agent_harness.py compile --profile coding --target codex
+## Why This Works When Ad-Hoc Prompts Don't
+
+Most teams hand-tune a system prompt per tool. That prompt grows, rots, and is never tested. A rule gets deleted by accident and nobody notices.
+
+Agent Harness closes three gaps:
+
+1. **Mechanisms over personality.** The portable part of a great prompt is *how it routes and verifies*, not *who it claims to be*.
+2. **Rules are failure-driven.** No rule exists without a concrete failure it prevents — that's enforced as a governance principle, not just hoped for.
+3. **Rules are test-protected.** Every protected rule has `enforced_by` anchors. Delete the rule, the eval turns red. The kit audits itself in CI.
+
+## Design Principles
+
 ```
-
-Compile a coding profile for Claude Code:
-
-```powershell
-python .\scripts\agent_harness.py compile --profile coding --target claude-code
+ ┌──────────────────────────────────────────────────────────────────┐
+ │  Evidence over confidence   —  never claim what wasn't observed  │
+ │  Read before write          —  unconditionally inspect first      │
+ │  Current sources for change —  search when facts may differ       │
+ │  Verify before completion   —  collect proof, then report         │
+ │  Epistemic precision        —  separate observed / inferred /     │
+ │                                assumed                            │
+ │  Prose first                —  structure only when it earns it    │
+ │  Failure-driven governance  —  every rule points to a real break  │
+ └──────────────────────────────────────────────────────────────────┘
 ```
-
-Compile a coding profile for IDE assistants:
-
-```powershell
-python .\scripts\agent_harness.py compile --profile coding --target ide
-```
-
-Run the harness validation checks:
-
-```powershell
-python .\scripts\agent_harness.py eval
-```
-
-Check whether a profile is compatible with a target host:
-
-```powershell
-python .\scripts\agent_harness.py doctor --profile coding --target codex
-```
-
-Run the project-level completion checks:
-
-```powershell
-python .\scripts\agent_harness.py verify
-```
-
-Compiled prompts are written under the local build directory. Generated build outputs are intentionally ignored by git.
-
-## Install Into A Project
-
-Install for Codex:
-
-```powershell
-python .\scripts\agent_harness.py install --profile coding --target codex --project .
-```
-
-Install for Claude Code:
-
-```powershell
-python .\scripts\agent_harness.py install --profile coding --target claude-code --project .
-```
-
-Install for IDE assistants:
-
-```powershell
-python .\scripts\agent_harness.py install --profile coding --target ide --project .
-```
-
-The installer is conservative. If a target instruction file already exists, it writes a sibling Agent Harness file instead of overwriting the existing file.
-
-## Concepts
-
-The core prompt is the kernel. It should stay short and stable. It defines default behavior that should apply in any host.
-
-Policy cards are behavior modules. They hold detailed guidance for domains such as research freshness, file creation, memory honesty, tool discipline, and completion verification.
-
-Profiles choose which policy cards to load. A coding profile can prioritize repository inspection and test evidence. A research profile can prioritize source quality and freshness-sensitive claims.
-
-Adapters translate the same harness into a host-specific instruction surface. The Codex adapter emphasizes repository instructions and verification. The Claude Code adapter targets project memory and command files. The IDE adapter targets project-level assistant rules.
-
-Capabilities describe what each target host supports. Profiles declare requirements, and `doctor` fails early when a profile asks for behavior the target cannot provide.
-
-Done criteria are deterministic checks for the kit itself. They verify files, compilation, runtime context injection, eval contracts, and forbidden-text regressions without relying on model judgment.
-
-Evals are lightweight regression cases. They are not a full model evaluation framework, but they are executable: the CLI parses each `must` behavior token and verifies that the compiled prompt contains a mapped policy basis for that behavior. This catches policy regressions such as deleting current-source routing, exact-URL handling, file inspection, or completion-evidence requirements.
-
-## Common Workflows
-
-To create a new behavior rule, add or edit a policy card, include it in the relevant profile, then add an eval case that captures the failure mode the rule is meant to prevent.
-
-To add a small routing detail, prefer `routing-examples` or `preflight-checks` instead of expanding the core prompt. These cards hold concrete examples such as exact-URL fetching, unknown-entity lookup, durable-output routing, and context refresh after interruption.
-
-To create a new agent mode, add a profile that selects an appropriate policy-card set. Then compile it for the target host and inspect the generated prompt.
-
-To support a new host, add an adapter that describes how the host should consume the compiled prompt. Then register the adapter in the manifest.
-
-To define target requirements, update the capability matrix and add `requires` entries to the relevant profile. Use `doctor` to catch mismatches before installing.
-
-To tighten release readiness, add a deterministic check to the done criteria file and run `verify`.
-
-To improve prompt quality, start from observed failures. Do not grow the core prompt just because a rule sounds useful. Prefer a focused policy card and a regression case.
 
 ## Repository Layout
 
-```text
-agents/
-  agent-harness/
-    SYSTEM.md
-    SKILL.md
-    capabilities.json
-    done_criteria.json
-    harness.json
-    adapters/
-    evals/
-    notes/
-    policies/
-    profiles/
+```
+agents/agent-harness/
+├── SYSTEM.md              Core kernel prompt
+├── harness.json           Manifest linking all components
+├── capabilities.json      Host capability matrix
+├── done_criteria.json     Deterministic completion checks
+├── policies/              ← 12 modular behavior cards
+├── profiles/              ← core · coding · research
+├── adapters/              ← core · codex · claude-code · ide
+├── evals/                 ← 33 regression cases
+└── notes/                 ← source-prompt-map tracing every extraction
 scripts/
-  agent_harness.py
+└── agent_harness.py       Zero-dependency CLI
 ```
 
-The original source prompt is kept as a design corpus. It should not be copied into compiled runtime prompts.
+## Common Workflows
 
-## Safety And Maintenance Notes
+| Goal | Action |
+|---|---|
+| Add a behavior rule | Write a policy card → include in profile → add an eval case |
+| Add a routing detail | Extend `routing-examples.md` or `preflight-checks.md`, not the kernel |
+| Support a new host | Add an adapter → register in `harness.json` → add capability entry |
+| Tighten release gates | Add a check to `done_criteria.json` → run `verify` |
+| Learn another source prompt | Follow the extraction method in `notes/source-prompt-map.md` |
 
-Agent Harness is a prompt and instruction compiler, not a sandbox. The host still controls available tools, permissions, network access, and memory. Host instructions remain higher priority than compiled harness text.
+## Safety Notes
 
-Keep generated outputs out of source control unless there is a reason to snapshot a compiled prompt for review. Source files, policy cards, profiles, adapters, and evals are the maintainable artifacts.
+Agent Harness is a **prompt compiler, not a sandbox**. The host still controls tools, permissions, network, and memory. Host instructions always take priority over compiled harness text. The original Claude Fable 5 source prompt is kept as a design corpus only — it is never copied into compiled runtime prompts.
 
-When changing behavior, run:
+## Documentation
 
-```powershell
-python .\scripts\agent_harness.py eval
-python .\scripts\agent_harness.py verify
-python -m py_compile .\scripts\agent_harness.py
-```
+- [Chinese README](README.zh-CN.md) — 中文文档
+- [CHANGELOG](CHANGELOG.md) — version history & extraction rounds
+- [Design Notes](agent-harness-design.md) — architecture rationale
+- [Source Prompt Map](agents/agent-harness/notes/source-prompt-map.md) — every rule's lineage
 
-If you compile prompts during development, remove transient Python cache files before committing. The project gitignore already excludes common cache and build outputs.
+## License
+
+MIT
