@@ -1,6 +1,6 @@
 <div align="center">
 
-# Agent Harness
+# Feibo Deck
 
 ### Reverse-engineered from a production-grade system prompt into a portable, tested AI agent governance kit.
 
@@ -57,7 +57,7 @@ Every rule in the kit traces back to a **specific line in Fable 5** that itself 
 
 AI agents fail in predictable ways. They answer from stale memory, summarize files they never opened, claim tests passed when nothing ran, produce chat text when a file was requested, or behave inconsistently across tools because every host has a separate prompt.
 
-Agent Harness makes agent behavior **modular, verifiable, and portable**.
+Feibo Deck makes agent behavior **modular, verifiable, and portable**.
 
 ## How It Works
 
@@ -113,7 +113,7 @@ python scripts/agent_harness.py doctor --profile coding --target codex
 
 Most teams hand-tune a system prompt per tool. That prompt grows, rots, and is never tested. A rule gets deleted by accident and nobody notices.
 
-Agent Harness closes three gaps:
+Feibo Deck closes three gaps:
 
 1. **Mechanisms over personality.** The portable part of a great prompt is *how it routes and verifies*, not *who it claims to be*.
 2. **Rules are failure-driven.** No rule exists without a concrete failure it prevents — that's enforced as a governance principle, not just hoped for.
@@ -163,7 +163,7 @@ scripts/
 
 ## Safety Notes
 
-Agent Harness is a **prompt compiler, not a sandbox**. The host still controls tools, permissions, network, and memory. Host instructions always take priority over compiled harness text. The original Claude Fable 5 source prompt is kept as a design corpus only — it is never copied into compiled runtime prompts.
+Feibo Deck is a **prompt compiler, not a sandbox**. The host still controls tools, permissions, network, and memory. Host instructions always take priority over compiled harness text. The original Claude Fable 5 source prompt is kept as a design corpus only — it is never copied into compiled runtime prompts.
 
 ## Documentation
 
