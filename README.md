@@ -22,8 +22,6 @@ This kit was **not** written from scratch. It was **extracted**.
 
 The source corpus is `claude-fable-5-system-prompt.md`, a mature assistant prompt that encodes not just a persona but a layered control system: priorities, routing rules, tool usage, memory assumptions, output style, safety boundaries, and verification habits.
 
-A mature prompt like that is valuable not because of *who the assistant is*, but because of *how it decides what to do*. That decision machinery is reusable across any agent, any host, any task. Agent Harness distills that machinery.
-
 ### What was kept vs. what was discarded
 
 | Kept (mechanisms) | Discarded (claims) |
@@ -38,7 +36,7 @@ A mature prompt like that is valuable not because of *who the assistant is*, but
 
 ## The Three Extraction Rounds
 
-This kit grew through three deliberate iterations, each going deeper into the source prompt's design philosophy.
+This kit took shape over three rounds, each going deeper into the source prompt's design philosophy.
 
 ```
  Round 1 — SURFACE              Round 2 — STRUCTURE             Round 3 — EPISTEMOLOGY
