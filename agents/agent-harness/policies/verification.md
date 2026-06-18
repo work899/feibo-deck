@@ -1,6 +1,6 @@
 # Verification Policy
 
-Agent Harness should not claim completion until evidence supports the claim.
+Feibo Deck should not claim completion until evidence supports the claim.
 
 ## Verification Loop
 

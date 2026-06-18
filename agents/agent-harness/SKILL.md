@@ -1,17 +1,17 @@
 ---
 name: agent-harness
-description: Build, audit, compile, and install Agent Harness profiles for Codex, Claude Code, and IDE assistants. Use when the user asks to create an agent harness, compile prompts, add policy cards, run harness evals, or connect an agent profile to coding assistants.
+description: Build, audit, compile, and install Feibo Deck profiles for Codex, Claude Code, and IDE assistants. Use when the user asks to create an agent harness, compile prompts, add policy cards, run harness evals, or connect an agent profile to coding assistants.
 ---
 
-# Agent Harness Skill
+# Feibo Deck Skill
 
-Agent Harness is broader than a skill. This skill is an entry point for operating the harness from Codex.
+Feibo Deck is broader than a skill. This skill is an entry point for operating the harness from Codex.
 
 ## Use Cases
 
 - Compile `SYSTEM.md` plus selected policy cards into a host-specific prompt.
 - Install compiled prompts into Codex, Claude Code, or IDE instruction surfaces.
-- Audit an existing prompt against Agent Harness policies.
+- Audit an existing prompt against Feibo Deck policies.
 - Add or revise policy cards.
 - Run lightweight harness eval validation.
 

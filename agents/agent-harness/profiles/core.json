@@ -1,6 +1,6 @@
 {
   "name": "core",
-  "description": "General-purpose Agent Harness profile.",
+  "description": "General-purpose Feibo Deck profile.",
   "policies": ["style", "tools", "routing-examples", "preflight-checks", "context-refresh", "files", "memory", "research", "safety", "verification"],
   "requires": ["prompt_compilation", "host_runtime_injected", "verification_guidance"]
 }

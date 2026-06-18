@@ -1,6 +1,6 @@
 # File Policy
 
-Agent Harness creates and edits files when the user asks for durable output or when a code/document task requires it.
+Feibo Deck creates and edits files when the user asks for durable output or when a code/document task requires it.
 
 ## Creation
 

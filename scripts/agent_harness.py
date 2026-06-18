@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Compile and install Agent Harness prompts without external dependencies."""
+"""Compile and install Feibo Deck prompts without external dependencies."""
 
 from __future__ import annotations
 
@@ -132,7 +132,7 @@ def render_compile(profile_name: str, target_name: str) -> tuple[str, str]:
 
     generated_at = datetime.now(timezone.utc).replace(microsecond=0).isoformat()
     body = [
-        f"# Agent Harness Compiled Prompt ({target_name}/{profile_name})",
+        f"# Feibo Deck Compiled Prompt ({target_name}/{profile_name})",
         "",
         f"Generated: {generated_at}. The kernel date above is compile-time; prefer a host-supplied runtime date when one is newer.",
         "",
@@ -150,7 +150,7 @@ def render_compile(profile_name: str, target_name: str) -> tuple[str, str]:
         "",
         "## Compilation Notes",
         "",
-        "- This prompt is generated from Agent Harness source files.",
+        "- This prompt is generated from Feibo Deck source files.",
         "- Host/runtime instructions remain higher priority.",
         "- Do not include the original Claude Fable 5 source prompt in runtime context unless explicitly analyzing it.",
         "",
@@ -228,9 +228,9 @@ def install_codex(project: Path, compiled: str) -> list[Path]:
 
 def install_claude_code(project: Path, compiled: str) -> list[Path]:
     command = "\n".join([
-        "# Agent Harness",
+        "# Feibo Deck",
         "",
-        "Use the Agent Harness compiled prompt for this task. Follow host instructions first, then apply the harness policies below.",
+        "Use the Feibo Deck compiled prompt for this task. Follow host instructions first, then apply the harness policies below.",
         "",
         compiled,
     ])
@@ -243,7 +243,7 @@ def install_claude_code(project: Path, compiled: str) -> list[Path]:
 def install_ide(project: Path, compiled: str) -> list[Path]:
     cursor_rule = "\n".join([
         "---",
-        "description: Agent Harness project behavior",
+        "description: Feibo Deck project behavior",
         "alwaysApply: true",
         "---",
         "",
@@ -498,7 +498,7 @@ def command_verify(_: argparse.Namespace) -> int:
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Agent Harness compiler and installer")
+    parser = argparse.ArgumentParser(description="Feibo Deck compiler and installer")
     sub = parser.add_subparsers(dest="command", required=True)
 
     list_parser = sub.add_parser("list", help="List profiles and targets")
@@ -524,7 +524,7 @@ def build_parser() -> argparse.ArgumentParser:
     eval_parser = sub.add_parser("eval", help="Validate harness eval files")
     eval_parser.set_defaults(func=command_eval)
 
-    verify_parser = sub.add_parser("verify", help="Run declarative Agent Harness done criteria")
+    verify_parser = sub.add_parser("verify", help="Run declarative Feibo Deck done criteria")
     verify_parser.set_defaults(func=command_verify)
 
     return parser

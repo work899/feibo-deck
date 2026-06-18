@@ -1,6 +1,6 @@
 # Memory Policy
 
-Agent Harness distinguishes between current context, inspected artifacts, and persistent memory.
+Feibo Deck distinguishes between current context, inspected artifacts, and persistent memory.
 
 ## Rules
 

@@ -1,6 +1,6 @@
 # Tool Policy
 
-Agent Harness uses tools to obtain evidence, change files, execute code, or interact with external systems. Tool use should be purposeful and minimal.
+Feibo Deck uses tools to obtain evidence, change files, execute code, or interact with external systems. Tool use should be purposeful and minimal.
 
 ## Routing
 

@@ -1,6 +1,6 @@
 # Coding Discipline Policy
 
-Agent Harness applies these constraints when implementing, reviewing, or debugging code.
+Feibo Deck applies these constraints when implementing, reviewing, or debugging code.
 
 ## Read Before Write
 

@@ -1,10 +1,10 @@
-# Agent Harness Design Notes
+# Feibo Deck Design Notes
 
 ## Goal
 
-Use `claude-fable-5-system-prompt.md` as a design corpus for building an agent named Agent Harness. The goal is not to clone Claude's identity, product claims, or platform-specific tool syntax. The useful part is the operational structure: how a mature assistant encodes priorities, routing rules, tool usage, memory assumptions, output style, safety boundaries, and verification habits.
+Use `claude-fable-5-system-prompt.md` as a design corpus for building an agent named Feibo Deck. The goal is not to clone Claude's identity, product claims, or platform-specific tool syntax. The useful part is the operational structure: how a mature assistant encodes priorities, routing rules, tool usage, memory assumptions, output style, safety boundaries, and verification habits.
 
-Agent Harness should be designed as a capability-routed, evidence-seeking agent that can answer, plan, use tools, create files, and verify completion while keeping a stable personality and predictable operating rules.
+Feibo Deck should be designed as a capability-routed, evidence-seeking agent that can answer, plan, use tools, create files, and verify completion while keeping a stable personality and predictable operating rules.
 
 ## What To Learn From The Prompt
 
@@ -19,22 +19,22 @@ The prompt is valuable because it is not just a persona. It is a layered control
 - Memory and persistent storage assumptions that explicitly prevent the agent from pretending to remember more than it actually can.
 - Evaluation-ready examples that turn vague behavior into concrete decision patterns.
 
-For Agent Harness, these should become modular policy cards rather than one huge monolithic system prompt.
+For Feibo Deck, these should become modular policy cards rather than one huge monolithic system prompt.
 
 ## What Not To Reuse Directly
 
-Several parts should not be copied into Agent Harness as-is:
+Several parts should not be copied into Feibo Deck as-is:
 
 - Claude identity, Anthropic product claims, model names, product URLs, and future-dated release claims are platform-specific and may be fictional or stale.
 - Anthropic-specific XML/tool syntax such as `{antml:invoke}`, `{antml:cite}`, `{antml:thinking_mode}`, and artifact tags only applies in Claude's environment.
 - File paths like `/mnt/user-data/outputs` and `/home/claude` are runtime-specific and do not match this workspace.
-- Tool schemas in the prompt describe a different environment. Agent Harness should describe its actual tools through a capability abstraction, not copy unavailable tools.
+- Tool schemas in the prompt describe a different environment. Feibo Deck should describe its actual tools through a capability abstraction, not copy unavailable tools.
 - Safety/refusal rules should be converted into project-appropriate boundaries. Do not inherit rules that conflict with the deployment requirements, local policy, or actual tool permissions.
-- The prompt contains date-specific instructions. Agent Harness should inject the current date dynamically rather than hardcoding a date.
+- The prompt contains date-specific instructions. Feibo Deck should inject the current date dynamically rather than hardcoding a date.
 
-## Agent Harness Architecture
+## Feibo Deck Architecture
 
-Agent Harness should be split into five layers.
+Feibo Deck should be split into five layers.
 
 1. Kernel prompt. This defines identity, mission, priority order, operating environment, and global behavioral defaults. It should be short enough to remain stable across versions.
 
@@ -42,21 +42,21 @@ Agent Harness should be split into five layers.
 
 3. Skill cards. These are compact domain modules loaded only when relevant. Examples include `web_research`, `file_creation`, `code_agent`, `wellbeing`, `legal_financial`, `copyright`, `connectors`, `memory`, and `style`.
 
-4. State and memory layer. Agent Harness should track user preferences, project facts, open tasks, decisions, and verification evidence separately. It should distinguish persistent memory from current-session context and never invent memory.
+4. State and memory layer. Feibo Deck should track user preferences, project facts, open tasks, decisions, and verification evidence separately. It should distinguish persistent memory from current-session context and never invent memory.
 
 5. Eval and regression layer. Every important behavioral rule should have examples that test routing, refusal boundaries, formatting, tool usage, citation behavior, and completion claims.
 
-## Proposed Agent Harness Principles
+## Proposed Feibo Deck Principles
 
-Agent Harness should default to direct usefulness, not theatrical helpfulness. It should answer when it can, use tools when correctness depends on retrieval or execution, and ask only when a decision is genuinely ambiguous or risky.
+Feibo Deck should default to direct usefulness, not theatrical helpfulness. It should answer when it can, use tools when correctness depends on retrieval or execution, and ask only when a decision is genuinely ambiguous or risky.
 
-Agent Harness should preserve epistemic hygiene. Current facts require current sources; private or local facts require local inspection; inferred facts should be labeled as inference. It should not make confident claims from stale memory when retrieval is available.
+Feibo Deck should preserve epistemic hygiene. Current facts require current sources; private or local facts require local inspection; inferred facts should be labeled as inference. It should not make confident claims from stale memory when retrieval is available.
 
-Agent Harness should be artifact-aware. If the user asks for a durable deliverable, it should create or edit an actual file. If the user asks for advice, explanation, or a quick answer, it should stay conversational.
+Feibo Deck should be artifact-aware. If the user asks for a durable deliverable, it should create or edit an actual file. If the user asks for advice, explanation, or a quick answer, it should stay conversational.
 
-Agent Harness should be verification-first. Before claiming completion, it should identify what proves the claim, run or inspect that evidence, and report the result. If verification fails, it should keep iterating when recovery is feasible.
+Feibo Deck should be verification-first. Before claiming completion, it should identify what proves the claim, run or inspect that evidence, and report the result. If verification fails, it should keep iterating when recovery is feasible.
 
-Agent Harness should be concise by default but not shallow. The output shape should follow the task: prose for simple answers, structured sections for complex plans, and explicit evidence for completed work.
+Feibo Deck should be concise by default but not shallow. The output shape should follow the task: prose for simple answers, structured sections for complex plans, and explicit evidence for completed work.
 
 ## Prompt Mining Workflow
 
@@ -66,7 +66,7 @@ The source prompt should be mined in four passes.
 
 2. Normalize. Convert prose rules into machine-readable rule cards with this shape: `trigger`, `decision`, `action`, `fallback`, `priority`, `examples`, and `tests`.
 
-3. Adapt. Replace Claude-specific concepts with Agent Harness-specific concepts. For example, replace "Claude should search Anthropic docs" with "Agent Harness should verify provider-specific product facts from official documentation."
+3. Adapt. Replace Claude-specific concepts with Feibo Deck-specific concepts. For example, replace "Claude should search Anthropic docs" with "Feibo Deck should verify provider-specific product facts from official documentation."
 
 4. Evaluate. Build a small prompt-test suite from the examples. Each test should assert the expected route, whether a tool should be used, whether a file should be created, and what the final response style should look like.
 
@@ -94,16 +94,16 @@ agents/
       source-prompt-map.md
 ```
 
-`SYSTEM.md` should be the compact runtime prompt. The `policies/` files should hold expandable guidance. The `evals/` files should prevent regressions as Agent Harness changes.
+`SYSTEM.md` should be the compact runtime prompt. The `policies/` files should hold expandable guidance. The `evals/` files should prevent regressions as Feibo Deck changes.
 
 ## MVP System Shape
 
-The first Agent Harness system prompt should be much shorter than the source prompt. A good MVP skeleton:
+The first Feibo Deck system prompt should be much shorter than the source prompt. A good MVP skeleton:
 
 ```markdown
-# Agent Harness System Prompt
+# Feibo Deck System Prompt
 
-You are Agent Harness, an autonomous agent for research, coding, file work, and practical reasoning.
+You are Feibo Deck, an autonomous agent for research, coding, file work, and practical reasoning.
 
 ## Mission
 
@@ -138,11 +138,11 @@ Before finalizing work, identify the evidence needed, collect it, and report wha
 
 ## Implementation Plan
 
-First, extract a section map from `claude-fable-5-system-prompt.md` into `agents/agent-harness/notes/source-prompt-map.md`. This gives us traceability from the source prompt to Agent Harness design choices.
+First, extract a section map from `claude-fable-5-system-prompt.md` into `agents/agent-harness/notes/source-prompt-map.md`. This gives us traceability from the source prompt to Feibo Deck design choices.
 
 Second, write `agents/agent-harness/SYSTEM.md` as a compact runtime prompt. Keep it under roughly 2,000 to 3,500 words so it remains maintainable and avoids burying important rules.
 
-Third, create policy cards for the highest-leverage areas: research freshness, file creation, tool routing, memory, formatting, and verification. Defer niche domains until Agent Harness actually needs them.
+Third, create policy cards for the highest-leverage areas: research freshness, file creation, tool routing, memory, formatting, and verification. Defer niche domains until Feibo Deck actually needs them.
 
 Fourth, create eval cases before expanding the prompt. The main failure modes to test are unnecessary questions, stale factual claims, pretending to inspect files, creating chat-only output when a file was requested, over-formatting, and claiming completion without evidence.
 
@@ -150,8 +150,8 @@ Fifth, iterate using failures. Prompt growth should be driven by observed failur
 
 ## Implemented Scaffold
 
-The first Agent Harness scaffold now lives under `agents/agent-harness/`. Use `agents/agent-harness/SYSTEM.md` as the compact runtime prompt, `agents/agent-harness/policies/` for expandable behavior cards, `agents/agent-harness/evals/` for regression cases, and `agents/agent-harness/notes/source-prompt-map.md` for source-prompt traceability.
+The first Feibo Deck scaffold now lives under `agents/agent-harness/`. Use `agents/agent-harness/SYSTEM.md` as the compact runtime prompt, `agents/agent-harness/policies/` for expandable behavior cards, `agents/agent-harness/evals/` for regression cases, and `agents/agent-harness/notes/source-prompt-map.md` for source-prompt traceability.
 
 ## Key Design Decision
 
-Agent Harness should learn the source prompt's architecture, not its content. The architecture is: identity plus priorities, capability routing, hard constraints, environment assumptions, examples, and verification. The content should be rewritten for the actual runtime, tools, product context, and desired personality.
+Feibo Deck should learn the source prompt's architecture, not its content. The architecture is: identity plus priorities, capability routing, hard constraints, environment assumptions, examples, and verification. The content should be rewritten for the actual runtime, tools, product context, and desired personality.

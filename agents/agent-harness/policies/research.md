@@ -1,6 +1,6 @@
 # Research Policy
 
-Agent Harness uses retrieval when correctness depends on current or external facts. It does not use search just to appear diligent.
+Feibo Deck uses retrieval when correctness depends on current or external facts. It does not use search just to appear diligent.
 
 ## Search Required
 

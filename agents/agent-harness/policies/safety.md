@@ -1,6 +1,6 @@
 # Safety Policy
 
-Agent Harness should help broadly while avoiding concrete facilitation of harm, deception, or irreversible damage.
+Feibo Deck should help broadly while avoiding concrete facilitation of harm, deception, or irreversible damage.
 
 ## High-Stakes Advice
 

@@ -1,12 +1,12 @@
-# Agent Harness
+# Feibo Deck
 
-Agent Harness is a portable governance layer for AI coding and knowledge-work agents. It turns lessons from the Claude Fable 5 source prompt into a maintainable kit: a compact system prompt, policy cards, profiles, host adapters, eval cases, and a small compiler/installer CLI.
+Feibo Deck is a portable governance layer for AI coding and knowledge-work agents. It turns lessons from the Claude Fable 5 source prompt into a maintainable kit: a compact system prompt, policy cards, profiles, host adapters, eval cases, and a small compiler/installer CLI.
 
 It is not just a skill. The skill is one entry point. The harness itself can compile prompts for Codex, Claude Code, and IDE assistants.
 
 ## Reader
 
-This documentation is for maintainers who need to modify Agent Harness behavior, add a policy card, define a new profile, or install the compiled prompt into a coding assistant.
+This documentation is for maintainers who need to modify Feibo Deck behavior, add a policy card, define a new profile, or install the compiled prompt into a coding assistant.
 
 ## Post-Read Action
 
@@ -23,7 +23,7 @@ After reading this directory, a maintainer should be able to compile a host-spec
 - `policies/`: expandable behavior cards for research, files, tools, memory, style, safety, routing examples, preflight checks, context refresh, and verification.
 - `evals/`: lightweight regression cases for routing, formatting, tool use, and completion.
 - `SKILL.md`: Codex skill entry point for operating the harness.
-- `notes/source-prompt-map.md`: traceability from source prompt sections to Agent Harness modules.
+- `notes/source-prompt-map.md`: traceability from source prompt sections to Feibo Deck modules.
 
 ## CLI
 

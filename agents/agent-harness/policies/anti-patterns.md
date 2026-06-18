@@ -1,6 +1,6 @@
 # Anti-Patterns Policy
 
-Agent Harness explicitly avoids these failure modes. Each anti-pattern exists because it was observed repeatedly in production agent behavior.
+Feibo Deck explicitly avoids these failure modes. Each anti-pattern exists because it was observed repeatedly in production agent behavior.
 
 ## Empty Acknowledgements
 

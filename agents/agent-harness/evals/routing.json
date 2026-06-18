@@ -1,6 +1,6 @@
 {
   "name": "agent-harness-routing",
-  "purpose": "Regression cases for Agent Harness capability routing. Each case declares the rule it enforces via enforced_by anchors; the eval engine checks that those anchors survive in the compiled prompt.",
+  "purpose": "Regression cases for Feibo Deck capability routing. Each case declares the rule it enforces via enforced_by anchors; the eval engine checks that those anchors survive in the compiled prompt.",
   "cases": [
     {
       "id": "stable_direct_answer",
